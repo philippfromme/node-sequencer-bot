@@ -1,8 +1,10 @@
 const Twit = require('twit');
 
+const { randomSequence, sequenceToUrl } = require('./sequence');
+
 let config;
 
-if (process.argv.slice(2).includes('development')) {
+if (isDevelopment()) {
   config = require('../config.json');
 } else {
   config = {
@@ -15,24 +17,40 @@ if (process.argv.slice(2).includes('development')) {
 
 const client = new Twit(config);
 
-function tweet(status) {
-  client.post('statuses/update', { status }, (err, data, response) => {
-    if (err) {
-      console.error(err);
-    }
+async function tweet() {
+  try {
+    const url = await sequenceToUrl(randomSequence());
 
-    console.log(data);
+    const status = await getStatus(url);
+
+    const { data } = await client.post('statuses/update', { status });
+
+    console.log(`Tweet created: ${ data.text }`);
+  } catch(err) {
+    console.error(err.message);
+  }
+}
+
+async function getStatus(url) {
+  const number = await getNumber();
+
+  return `🥁 Sequence #${ number } created by your friendly bot: ${ url }`;
+}
+
+const regex = /Sequence #([0-9]+) created by your friendly bot/;
+
+async function getNumber() {
+  const { data } = await client.get('statuses/user_timeline', { screen_name: 'philippfromme' });
+
+  const lastTweet = data.find(({ text }) => {
+    return regex.test(text);
   });
+
+  return lastTweet && lastTweet.text.match(regex)[ 1 ] || 1;
 }
 
-function getStatus(url) {
-  return `[${ getDate() }] A new sequence made by your friendly bot: ${ url }`;
+function isDevelopment() {
+  return process.argv.slice(2).includes('development');
 }
 
-function getDate() {
-  const date = new Date();
-
-  return `${ date.getFullYear() }-${ date.getMonth() + 1 }-${ date.getDate() } ${ date.getHours() }:${ date.getMinutes() }:${ date.getSeconds() }`;
-}
-
-tweet(getStatus('https://philippfromme.github.io/node-sequencer-demo/'));
+tweet();

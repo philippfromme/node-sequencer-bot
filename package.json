@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/philippfromme/node-sequencer-bot#readme",
   "dependencies": {
-    "twit": "^2.2.11"
+    "min-dash": "^3.5.2",
+    "twit": "^2.2.11",
+    "zlib": "^1.0.5"
   }
 }
