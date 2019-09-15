@@ -46,7 +46,7 @@ async function getNumber() {
     return regex.test(text);
   });
 
-  return lastTweet && lastTweet.text.match(regex)[ 1 ] || 1;
+  return parseInt(lastTweet && lastTweet.text.match(regex)[ 1 ] || 0) + 1;
 }
 
 function isDevelopment() {
