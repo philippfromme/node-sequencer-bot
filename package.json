@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/philippfromme/node-sequencer-bot#readme",
   "dependencies": {
-    "min-dash": "^3.5.2",
+    "min-dash": "^3.8.1",
     "twit": "^2.2.11",
     "zlib": "^1.0.5"
   }
